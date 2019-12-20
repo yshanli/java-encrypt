@@ -1,0 +1,14 @@
+生成openssl私钥，此处test.key格式应该是PKCS#1
+openssl genrsa -out test.key 1024
+
+导出格式为PKCS#8的公私秘钥，此处秘钥已经被BASE64编码，JAVA代码使用的话 需要先BASE64解密再使用
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in test.key -out test_pri.pem -nocrypt
+openssl rsa -in test.key -pubout -outform PEM -out test_pub.pem
+
+对文件做SHA256签名
+openssl dgst -sign rsa_private_key.pem -sha256 -out sign.txt tw.txt
+对签名做BASE64编码
+openssl base64 -in sign.txt -out sign.base64.txt
+
+对签名验证
+openssl dgst -verify rsa_public_key.pem -sha256 -signature sign.txt tw.txt
